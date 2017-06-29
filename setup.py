@@ -1,5 +1,22 @@
 #!/usr/bin/env python3
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#LICENSE:
+#
+#colcol is free software; you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation; either version 3 of the License, or
+#(at your option) any later version.
+#
+#colcol is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Library General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software Foundation,
+#Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from setuptools import setup
 
@@ -13,7 +30,6 @@ setup(
 	name='colcol',    # This is the name of your PyPI-package.
 	description='A script to deal with color conversions, color transformations, and generating color scales.',       #package description
 	version='0.12',                          # Update the version number for new releases
-#	scripts=['colcol.py'],                  # The name of your scipt, and also the command you'll be using for calling it
 	author='Martin Engqvist',
 	author_email='martin_engqvist@hotmail.com',
 	url='https://github.com/mengqvist/colcol',
