@@ -18,21 +18,26 @@
 #Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-from setuptools import setup
-
-
+from setuptools import setup, find_packages
+from colcol import convert
 import sys
 if sys.version_info[0] == 2:
     sys.exit("Sorry, only Python 3 is supported by this package.")
-    
-    
+
+
+long_description = 'Making accurate color scales for communicating data in visualizations is critical. In many presentations and publications unbalanced scales are used. A common error is to use color scales which does not have smooth and constant change in lightness, leading to difficulty in interpreting the visualized data. colcol provides Python code to deal with color conversions as well as with generating publication-quality color scales.'
+version = convert.__version__
+
 setup(
 	name='colcol',    # This is the name of your PyPI-package.
-	description='A script to deal with color conversions, color transformations, and generating color scales.',       #package description
-	version='0.12',                          # Update the version number for new releases
+	description='A set of scripts to deal with color conversions, color transformations, and generating color scales.',       #package description
+    long_description=long_description,
+    version=version,                          # MAJOR.MINOR.PATCH
 	author='Martin Engqvist',
 	author_email='martin_engqvist@hotmail.com',
 	url='https://github.com/mengqvist/colcol',
+    packages=find_packages(exclude=['contrib', 'docs', 'tests*']), #find folders containing scripts, exclude irrelevant ones
+    install_requires=['colorsys', 'tkinter'],
 	license='GPLv3+',
 	classifiers=[
 	# How mature is this project? Common values are
@@ -56,7 +61,7 @@ setup(
 	'Programming Language :: Python :: 3.3',
 	'Programming Language :: Python :: 3.4',
 	'Programming Language :: Python :: 3.5',
-	'Programming Language :: Python :: 3.6']    
+	'Programming Language :: Python :: 3.6'],
+    python_requires='>=3', #python version
+    keywords='color colour conversion scale hue lightness gradient RGB HEX tones hues tints shades'
 )
-
-
