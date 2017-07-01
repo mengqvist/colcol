@@ -74,3 +74,42 @@ The generated colors can be visualized
 ```
 convert.visualize(x.split_complementary())
 ```
+
+## generating color scales
+
+
+```
+from colcol import scales
+s = scales.rainbow()
+```
+
+```
+#sequential scale to represent continuous variables, with two defined colors
+s = scales.sequential(colors=['#543005', '#f6ee88'], step_num=5)
+
+#with three defined colors
+s = scales.sequential(colors=['#8c510a', '#d73027', '#ffffff'], step_num=5)
+
+#with four defined colors
+s = scales.sequential(colors=['#000099', '#990000', '#990099', '#ffffff'], step_num=5)
+```
+
+```
+#diverging scale to represent continuous variables with a defined midpoint, with two defined colors. The mid color defaults to white.
+s = scales.diverging(colors=['#8c510a', '#01665e'], step_num=5)
+
+#with three defined colors. Used when one wants to define a mid color other than white.
+s = scales.diverging(colors=['#8c510a', '#f6e8c3', '#01665e'], step_num=5)
+
+#with four defined colors. The mid color defaults to white.
+s = scales.diverging(colors=['#', '#', '#', '#'], step_num=5)
+
+#with five defined colors. Used when one wants to define a mid color other than white.
+s = scales.diverging(colors=['#', '#', '#', '#', '#'], step_num=5)
+```
+
+
+```
+#qualitative scale to represent categories, factors etc.
+s = scales.qualitative(scale=1, num_steps=5)
+```

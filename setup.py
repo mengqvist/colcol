@@ -37,7 +37,7 @@ setup(
 	author_email='martin_engqvist@hotmail.com',
 	url='https://github.com/mengqvist/colcol',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']), #find folders containing scripts, exclude irrelevant ones
-    install_requires=['colorsys', 'tkinter'],
+    install_requires=['colorsys'],
 	license='GPLv3+',
 	classifiers=[
 	# How mature is this project? Common values are
