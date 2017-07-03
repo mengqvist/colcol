@@ -114,42 +114,48 @@ def rainbow(start_col, step_num=10, clockwise=True):
 
 
 def _linear_bez(colors, step_num):
-    '''
-    Helper function to calculate linear bezier from two colors.
-    '''
-    color1, color2 = colors
-    col1_hsl = color1.hsl()
-    col2_hsl = color2.hsl()
+	'''
+	Helper function to calculate linear bezier from two colors.
+	'''
+	color1, color2 = colors
+	col1_hsl = color1.hsl()
+	col2_hsl = color2.hsl()
 
-    assert col1_hsl[2] != col2_hsl[2], 'Error, the two colors must differ in lightness.'
+	assert col1_hsl[2] != col2_hsl[2], 'Error, the two colors must differ in lightness.'
 
-    #figure out how much lightness should change if evenly stepped
-    stepsize = (col2_hsl[2]-col1_hsl[2])/(float(step_num)-1.0)
-    steps = [col1_hsl[2] + stepsize * s for s in range(step_num)]
-    #print('steps', steps)
+	#figure out how much lightness should change if evenly stepped
+	stepsize = (col2_hsl[2]-col1_hsl[2])/(float(step_num)-1.0)
+	steps = [col1_hsl[2] + stepsize * s for s in range(step_num)]
+	#print('steps', steps)
 
-    #find out which bezier t-values corresponds to these lightness steps
-    if col1_hsl[2] <= col2_hsl[2]: #darkest color is first
-        min_hsl = float(col1_hsl[2])
-        max_hsl = float(col2_hsl[2])
-        t_values = [algorithms.divide_and_conquer(0.0, 1.0, data=[min_hsl, max_hsl], target=s, func=bezier.calculate_linear_bezier) for s in steps]
+	#find out which bezier t-values corresponds to these lightness steps
+	if col1_hsl[2] < col2_hsl[2]: #darkest color is first
+		min_hsl = float(col1_hsl[2])
+		max_hsl = float(col2_hsl[2])
+		t_values = [algorithms.divide_and_conquer(0.0, 1.0, data=[min_hsl, max_hsl], target=s, func=bezier.calculate_linear_bezier) for s in steps]
 
-    elif col1_hsl[2] > col2_hsl[2]: #lightest color is first
-        min_hsl = float(col2_hsl[2])
-        max_hsl = float(col1_hsl[2])
-        t_values = [algorithms.divide_and_conquer(0.0, 1.0, data=[min_hsl, max_hsl], target=s, func=bezier.calculate_linear_bezier) for s in steps]
-        t_values = t_values[::-1]
+	elif col1_hsl[2] > col2_hsl[2]: #lightest color is first
+		min_hsl = float(col2_hsl[2])
+		max_hsl = float(col1_hsl[2])
+		t_values = [algorithms.divide_and_conquer(0.0, 1.0, data=[min_hsl, max_hsl], target=s, func=bezier.calculate_linear_bezier) for s in steps]
+		t_values = t_values[::-1]
 
+	#now get the colors for these steps. If white was used I need to transfer hue from the other color.
+	if color1 == '#f5f5f5':
+		h_vals = [bezier.calculate_linear_bezier([col2_hsl[0], col2_hsl[0]], t) for t in t_values]
+		#s_vals = [bezier.calculate_linear_bezier([col2_hsl[1], col2_hsl[1]], t) for t in t_values]
+	elif color2 == '#f5f5f5':
+		h_vals = [bezier.calculate_linear_bezier([col1_hsl[0], col1_hsl[0]], t) for t in t_values]
+		#s_vals = [bezier.calculate_linear_bezier([col1_hsl[1], col1_hsl[1]], t) for t in t_values]
+	else:
+		h_vals = [bezier.calculate_linear_bezier([col1_hsl[0], col2_hsl[0]], t) for t in t_values]
+	s_vals = [bezier.calculate_linear_bezier([col1_hsl[1], col2_hsl[1]], t) for t in t_values]
+	l_vals = [bezier.calculate_linear_bezier([col1_hsl[2], col2_hsl[2]], t) for t in t_values]
 
-    #now get the colors for these steps
-    h_vals = [bezier.calculate_linear_bezier([col1_hsl[0], col2_hsl[0]], t) for t in t_values]
-    s_vals = [bezier.calculate_linear_bezier([col1_hsl[1], col2_hsl[1]], t) for t in t_values]
-    l_vals = [bezier.calculate_linear_bezier([col1_hsl[2], col2_hsl[2]], t) for t in t_values]
+	#combine h, s and l components
+	hsl_cols = list(zip(h_vals, s_vals, l_vals))
 
-    #combine h, s and l components
-    hsl_cols = list(zip(h_vals, s_vals, l_vals))
-
-    return [convert.Color(convert.hsl_to_hex(s)) for s in hsl_cols]
+	return [convert.Color(convert.hsl_to_hex(s)) for s in hsl_cols]
 
 
 
@@ -175,16 +181,15 @@ def _quadratic_bez(colors, step_num):
 	#figure out how much lightness should change if evenly stepped
 	stepsize = (col3_hsl[2]-col1_hsl[2])/(float(step_num)-1.0)
 	steps = [col1_hsl[2] + stepsize * s for s in range(step_num)]
-	#print(steps)
 
 	#find out which bezier t-values corresponds to these lightness steps
-	if col1_hsl[2] <= col2_hsl[2] <= col3_hsl[2]: #darkest color is first
+	if col1_hsl[2] < col3_hsl[2]: #darkest color is first
 		min_hsl = float(col1_hsl[2])
 		med_hsl = float(col2_hsl[2])
 		max_hsl = float(col3_hsl[2])
 		t_values = [algorithms.divide_and_conquer(0.0, 1.0, data=[min_hsl, med_hsl, max_hsl], target=s, func=bezier.calculate_quadratic_bezier) for s in steps]
 
-	elif col1_hsl[2] >= col2_hsl[2] >= col3_hsl[2]: #lightest color is first
+	elif col1_hsl[2] > col3_hsl[2]: #lightest color is first
 		min_hsl = float(col3_hsl[2])
 		med_hsl = float(col2_hsl[2])
 		max_hsl = float(col1_hsl[2])
@@ -194,9 +199,16 @@ def _quadratic_bez(colors, step_num):
 	else:
 		raise ValueError
 
-	#now get the colors for these steps
-	h_vals = [bezier.calculate_quadratic_bezier([col1_hsl[0], col2_hsl[0], col3_hsl[0]], t) for t in t_values]
-	s_vals = [bezier.calculate_quadratic_bezier([col1_hsl[1], col2_hsl[1], col3_hsl[1]], t) for t in t_values]
+	#now get the colors for these steps. If white was used I need to transfer hue from the color next to it.
+	if color1 == '#f5f5f5':
+		h_vals = [bezier.calculate_quadratic_bezier([col2_hsl[0], col2_hsl[0], col3_hsl[0]], t) for t in t_values]
+		s_vals = [bezier.calculate_quadratic_bezier([col2_hsl[1], col2_hsl[1], col3_hsl[1]], t) for t in t_values]
+	elif color3 == '#f5f5f5':
+		h_vals = [bezier.calculate_quadratic_bezier([col1_hsl[0], col2_hsl[0], col2_hsl[0]], t) for t in t_values]
+		s_vals = [bezier.calculate_quadratic_bezier([col1_hsl[1], col2_hsl[1], col2_hsl[1]], t) for t in t_values]
+	else:
+		h_vals = [bezier.calculate_quadratic_bezier([col1_hsl[0], col2_hsl[0], col3_hsl[0]], t) for t in t_values]
+		s_vals = [bezier.calculate_quadratic_bezier([col1_hsl[1], col2_hsl[1], col3_hsl[1]], t) for t in t_values]
 	l_vals = [bezier.calculate_quadratic_bezier([col1_hsl[2], col2_hsl[2], col3_hsl[2]], t) for t in t_values]
 
 	#combine h, s and l components
@@ -229,7 +241,6 @@ def _cubic_bez(colors, step_num):
 		color3 = color3.set_l( col4_hsl[2] - (col4_hsl[2]-col1_hsl[2])/3 )
 		col2_hsl = color2.hsl()
 		col3_hsl = color3.hsl()
-		print(col1_hsl[2], col2_hsl[2], col3_hsl[2], col4_hsl[2])
 
 	#figure out how much lightness should change if evenly stepped
 	stepsize = (col4_hsl[2]-col1_hsl[2])/(float(step_num)-1.0)
@@ -237,14 +248,14 @@ def _cubic_bez(colors, step_num):
 	#print(steps)
 
 	#find out which bezier t-values corresponds to these lightness steps
-	if col1_hsl[2] <= col2_hsl[2] <= col3_hsl[2]: #darkest color is first
+	if col1_hsl[2] < col4_hsl[2]: #darkest color is first
 		min_hsl = float(col1_hsl[2])
 		med1_hsl = float(col2_hsl[2])
 		med2_hsl = float(col3_hsl[2])
 		max_hsl = float(col4_hsl[2])
 		t_values = [algorithms.divide_and_conquer(0.0, 1.0, data=[min_hsl, med1_hsl, med2_hsl, max_hsl], target=s, func=bezier.calculate_cubic_bezier) for s in steps]
 
-	elif col1_hsl[2] >= col2_hsl[2] >= col3_hsl[2]: #lightest color is first
+	elif col1_hsl[2] > col4_hsl[2]: #lightest color is first
 		min_hsl = float(col4_hsl[2])
 		med1_hsl = float(col3_hsl[2])
 		med2_hsl = float(col2_hsl[2])
@@ -254,9 +265,16 @@ def _cubic_bez(colors, step_num):
 	else:
 		raise ValueError
 
-	#now get the colors for these steps
-	h_vals = [bezier.calculate_cubic_bezier([col1_hsl[0], col2_hsl[0], col3_hsl[0], col4_hsl[0]], t) for t in t_values]
-	s_vals = [bezier.calculate_cubic_bezier([col1_hsl[1], col2_hsl[1], col3_hsl[1], col4_hsl[1]], t) for t in t_values]
+	#now get the colors for these steps. If white was used I need to transfer hue from the color next to it.
+	if color1 == '#f5f5f5':
+		h_vals = [bezier.calculate_cubic_bezier([col2_hsl[0], col2_hsl[0], col3_hsl[0], col4_hsl[0]], t) for t in t_values]
+		s_vals = [bezier.calculate_cubic_bezier([col2_hsl[1], col2_hsl[1], col3_hsl[1], col4_hsl[1]], t) for t in t_values]
+	elif color4 == '#f5f5f5':
+		h_vals = [bezier.calculate_cubic_bezier([col1_hsl[0], col2_hsl[0], col3_hsl[0], col3_hsl[0]], t) for t in t_values]
+		s_vals = [bezier.calculate_cubic_bezier([col1_hsl[1], col2_hsl[1], col3_hsl[1], col3_hsl[1]], t) for t in t_values]
+	else:
+		h_vals = [bezier.calculate_cubic_bezier([col1_hsl[0], col2_hsl[0], col3_hsl[0], col4_hsl[0]], t) for t in t_values]
+		s_vals = [bezier.calculate_cubic_bezier([col1_hsl[1], col2_hsl[1], col3_hsl[1], col4_hsl[1]], t) for t in t_values]
 	l_vals = [bezier.calculate_cubic_bezier([col1_hsl[2], col2_hsl[2], col3_hsl[2], col4_hsl[2]], t) for t in t_values]
 
 	#combine h, s and l components
@@ -266,29 +284,33 @@ def _cubic_bez(colors, step_num):
 
 
 def sequential(colors, step_num=10):
-    '''
-    Create a sequential color scale going from a starting color to white or light yellow
-    color is the starting color in hex
-    end is either "white" or "yellow"
+	'''
+	Create a sequential color scale going from a starting color to white or light yellow
+	color is the starting color in hex
+	end is either "white" or "yellow"
 
-    The function will use bezier smoothing to avoid harsh color transitions.
-    Furthermore, it will even out the lightness profile so that it is linear.
+	The function will use bezier smoothing to avoid harsh color transitions.
+	Furthermore, it will even out the lightness profile so that it is linear.
 	This ensures good color scales.
-    '''
-    assert 2 <= len(colors) <= 4, 'Error, supply between two and four colors for a sequential scale.'
-    #assert that the colors are valid
+	'''
+	assert 1 <= len(colors) <= 4, 'Error, supply between one and four colors for a sequential scale.'
+	#assert that the colors are valid
 	#they must also be continually lighter or continually darker
 
-    colors = [convert.Color(s) for s in colors] #convert to color objects
+	colors = [convert.Color(s) for s in colors] #convert to color objects
 
-    if len(colors) == 2: # linear bezier interpolation
-        return _linear_bez(colors, step_num)
+	if len(colors) == 1:
+		colors.append(convert.Color('#f5f5f5'))
+		print('You supplied only one color, inserting light grey as endpoint in sequential scale.')
 
-    elif len(colors) == 3: # quadratic bezier interpolation
-        return _quadratic_bez(colors, step_num)
+	if len(colors) == 2: # linear bezier interpolation
+		return _linear_bez(colors, step_num)
 
-    elif len(colors) == 4: # cubic bezier interpolation
-        return _cubic_bez(colors, step_num)
+	elif len(colors) == 3: # quadratic bezier interpolation
+		return _quadratic_bez(colors, step_num)
+
+	elif len(colors) == 4: # cubic bezier interpolation
+		return _cubic_bez(colors, step_num)
 
 
 
@@ -299,17 +321,17 @@ def diverging(colors, step_num=10):
 	number defines how many colors should get returned
 	'''
 	#there should be 3 or 5 colors where the center one is the middle color of the scale
-	#assert len(colors) == 3 or len(colors) == 5, 'Error, please supply three or five colors where the centre one is your midpoint color.'
+	assert 2 <= len(colors) <= 5, 'Error, please supply two to five colors.'
 
 	colors = [convert.Color(s) for s in colors] #convert to color objects
 
-	# if 2 or 4, automatically chooose white as mid color..... ###
+	# if 2 or 4, automatically chooose light grey as mid color..... ###
 	if len(colors) == 2:
-		colors.insert(1, convert.Color('#ffffff'))
-		print('You supplied an even number of colors, inserting white as midpoint in the diverging scale.')
+		colors.insert(1, convert.Color('#f5f5f5'))
+		print('You supplied an even number of colors, inserting light grey as midpoint in the diverging scale.')
 	elif len(colors) == 4:
-		colors.insert(2, convert.Color('#ffffff'))
-		print('You supplied an even number of colors, inserting white as midpoint in the diverging scale.')
+		colors.insert(2, convert.Color('#f5f5f5'))
+		print('You supplied an even number of colors, inserting light grey as midpoint in the diverging scale.')
 
     #adjust the lightness of the two extreme colors such that they match
 	h1, s1, l1 = colors[0].hsl()
@@ -352,6 +374,9 @@ def preset(scale, step_num=10, scale_type='diverging'):
 	else:
 		raise ValueError
 	#good scales
+
+	# brown scales.sequential(['#190c00', '#b86614', '#f5f5f5'], step_num)
+
 
 	#purple to teal
 	#col1 = '#800080'
