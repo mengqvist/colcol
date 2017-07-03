@@ -265,7 +265,7 @@ def _cubic_bez(colors, step_num):
 
 
 
-def sequential(colors, step_num):
+def sequential(colors, step_num=10):
     '''
     Create a sequential color scale going from a starting color to white or light yellow
     color is the starting color in hex
@@ -292,7 +292,7 @@ def sequential(colors, step_num):
 
 
 
-def diverging(colors, step_num):
+def diverging(colors, step_num=10):
 	'''
 	Generates a color scale that can be used for visualizing data.
 	colors should be a list of colors which a are used for creating the scale
@@ -337,11 +337,20 @@ def diverging(colors, step_num):
 
 
 
-def preset(scale, step_num=10):
+def preset(scale, step_num=10, scale_type='diverging'):
 	'''
 	Use preset colors to generate diverging scales.
 	'''
 	pass
+
+	if scale_type == 'diverging':
+		pass
+	elif scale_type == 'sequential':
+		pass
+	elif scale_type == 'qualitative':
+		pass
+	else:
+		raise ValueError
 	#good scales
 
 	#purple to teal
@@ -376,7 +385,7 @@ def preset(scale, step_num=10):
 	#col1 = '#cba916'
 	#col2 = '#8eb6d5'
 
-def qualitative(number, scale=1):
+def qualitative(scale, step_num=10):
 	'''
 	Return a list of qualitative colors for plotting categorical data.
 	number defines how many (12 is max)

@@ -116,5 +116,11 @@ s = scales.diverging(colors=['#', '#', '#', '#', '#'], step_num=5)
 
 ```
 #qualitative scale to represent categories, factors etc.
-s = scales.qualitative(scale=1, num_steps=5)
+s = scales.qualitative(scale=1, step_num=5)
+```
+
+```
+#pre-set scales
+#either 'diverging', 'qualitative' or 'sequential'
+s = preset(scale=1, step_num=5, scale_type='diverging')
 ```
