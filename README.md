@@ -30,7 +30,7 @@ x.rgb()
 #get hex color
 x.hex()
 
-#get hsl color (in where h, s and l are between 0 and 1)
+#get hsl color (where h, s and l are between 0 and 1)
 x.hsl()
 ```
 
@@ -80,7 +80,11 @@ convert.visualize(x.split_complementary())
 
 ```
 from colcol import scales
-s = scales.rainbow()
+```
+
+```
+#get a 'rainbow' covering the whole color wheel from the starting color
+s = scales.rainbow(start_col='#543005', step_num=10, clockwise=True)
 ```
 
 ```
@@ -95,7 +99,8 @@ s = scales.sequential(colors=['#000099', '#990000', '#990099', '#ffffff'], step_
 ```
 
 ```
-#diverging scale to represent continuous variables with a defined midpoint, with two defined colors. The mid color defaults to white.
+#diverging scale to represent continuous variables with a defined midpoint,
+#with two defined colors. The mid color defaults to white.
 s = scales.diverging(colors=['#8c510a', '#01665e'], step_num=5)
 
 #with three defined colors. Used when one wants to define a mid color other than white.
